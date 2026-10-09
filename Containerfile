@@ -26,6 +26,7 @@ RUN dnf install -y \
       tmux \
       stow \
       eza \
+      zoxide \
     ansible-core \
     && dnf clean all
 
