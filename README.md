@@ -1,43 +1,30 @@
-# cosmic_atomic &nbsp; [![bluebuild build badge](https://github.com/angelus788/cosmic_atomic/actions/workflows/build.yml/badge.svg)](https://github.com/angelus788/cosmic_atomic/actions/workflows/build.yml)
+# cosmic_atomic
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
+Fedora COSMIC Atomic 44 with extra tools and services baked in: zsh, fish,
+starship, NetBird, Cockpit, distrobox and the usual CLI tools. See
+[`Containerfile`](Containerfile) for the full list.
 
-After setup, it is recommended you update this README to describe your custom image.
+Built daily by GitHub Actions and published to
+`ghcr.io/angelus788/cosmic_atomic`.
 
-## Installation
+## Switch to this image
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
-
-To rebase an existing atomic Fedora installation to the latest build:
-
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/angelus788/cosmic_atomic:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/angelus788/cosmic_atomic:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
-
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
-
-## ISO
-
-If build on Fedora Atomic, you can generate an offline ISO with the instructions available [here](https://blue-build.org/how-to/generate-iso/#_top). These ISOs cannot unfortunately be distributed on GitHub for free due to large sizes, so for public projects something else has to be used for hosting.
-
-## Verification
-
-These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
+From any Fedora Atomic / bootc system:
 
 ```bash
-cosign verify --key cosign.pub ghcr.io/angelus788/cosmic_atomic
+sudo bootc switch ghcr.io/angelus788/cosmic_atomic:latest
+systemctl reboot
+```
+
+After that, `sudo bootc upgrade` (or the automatic update timer) pulls new builds.
+
+## Tags
+
+- `latest`, `44`: newest build
+- `44.YYYYMMDD`: a specific day's build, for rolling back
+
+## Build locally
+
+```bash
+sudo podman build -t cosmic_atomic -f Containerfile .
 ```
