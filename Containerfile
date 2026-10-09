@@ -24,7 +24,9 @@ RUN dnf install -y \
       btop \
       git \
       tmux \
-      ansible-core \
+      stow \
+      eza \
+    ansible-core \
     && dnf clean all
 
 # zsh + starship: Fedora's /etc/zshrc sources /etc/profile.d/*.sh under
