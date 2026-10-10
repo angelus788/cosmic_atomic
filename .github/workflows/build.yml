@@ -38,8 +38,21 @@ jobs:
             --pull=always \
             --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
             --label org.opencontainers.image.version=${FEDORA_VERSION}.$(date -u +%Y%m%d) \
-            -t "$IMAGE:latest" \
+            -t localhost/cosmic_atomic:raw \
             -f Containerfile .
+
+      # Regroup the image into stable per-package layers so updates only download
+      # the packages that actually changed, instead of every layer we rebuilt.
+      - name: Rechunk image
+        run: |
+          sudo podman run --rm --privileged \
+            -v /var/lib/containers:/var/lib/containers \
+            quay.io/fedora/fedora-bootc:${FEDORA_VERSION} \
+            /usr/libexec/bootc-base-imagectl rechunk \
+            localhost/cosmic_atomic:raw "$IMAGE:latest"
+          sudo podman rmi localhost/cosmic_atomic:raw
+          sudo podman image inspect "$IMAGE:latest" --format '{{len .RootFS.Layers}} layers'
+          df -h /
 
       - name: Push to GHCR
         if: github.event_name != 'pull_request'
