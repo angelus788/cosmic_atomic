@@ -70,6 +70,18 @@ RUN set -eux; \
     rm -f "$repo"; \
     dnf clean all
 
+# Make Ghostty the default terminal for all users: Super+T (COSMIC's "Terminal"
+# system action) and the dock icon. Per-user choices in COSMIC Settings still win.
+# grep fails the build if a COSMIC update moves these, rather than silently no-op.
+RUN set -eux; \
+    actions=/usr/share/cosmic/com.system76.CosmicSettings.Shortcuts/v1/system_actions; \
+    favorites=/usr/share/cosmic/com.system76.CosmicAppList/v1/favorites; \
+    sed -i 's/Terminal: "cosmic-term"/Terminal: "ghostty"/' "$actions"; \
+    grep -q 'Terminal: "ghostty"' "$actions"; \
+    sed -i 's/"com.system76.CosmicTerm"/"com.mitchellh.ghostty"/' "$favorites"; \
+    grep -q '"com.mitchellh.ghostty"' "$favorites"; \
+    test -f /usr/share/applications/com.mitchellh.ghostty.desktop
+
 # --- Starship ---------------------------------------------------------------
 # Not in the main Fedora repos: install the official static release binary and
 # verify it against the checksum published next to it. Replace "latest/download"
