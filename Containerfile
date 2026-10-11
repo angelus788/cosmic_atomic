@@ -59,6 +59,17 @@ RUN dnf install -y \
 # shipped above.
 RUN dnf --setopt=tsflags=noscripts install -y netbird && dnf clean all
 
+# --- Ghostty ----------------------------------------------------------------
+# Not in Fedora's repos or on Flathub; packaged in the scottames/ghostty COPR.
+# The repo is only needed at build time, so drop it afterwards.
+RUN set -eux; \
+    repo=/etc/yum.repos.d/scottames-ghostty.repo; \
+    curl -fsSL -o "$repo" \
+      "https://copr.fedorainfracloud.org/coprs/scottames/ghostty/repo/fedora-$(rpm -E %fedora)/scottames-ghostty-fedora-$(rpm -E %fedora).repo"; \
+    dnf install -y ghostty; \
+    rm -f "$repo"; \
+    dnf clean all
+
 # --- Starship ---------------------------------------------------------------
 # Not in the main Fedora repos: install the official static release binary and
 # verify it against the checksum published next to it. Replace "latest/download"
